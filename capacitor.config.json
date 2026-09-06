@@ -1,0 +1,9 @@
+{
+  "appId": "com.aqwaloashaar.app",
+  "appName": "اقوال و اشعار",
+  "webDir": "www",
+  "bundledWebRuntime": false,
+  "server": {
+    "androidScheme": "https"
+  }
+}

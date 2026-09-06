@@ -1,0 +1,17 @@
+{
+  "name": "aqwal-o-ashaar",
+  "version": "1.0.0",
+  "private": true,
+  "description": "اردو اقوال و اشعار — daily Urdu quotes and poetry, wrapped as an installable Android app",
+  "scripts": {
+    "build": "echo 'static site — nothing to compile, www/ is served as-is'"
+  },
+  "dependencies": {
+    "@capacitor/android": "^6.2.0",
+    "@capacitor/core": "^6.2.0"
+  },
+  "devDependencies": {
+    "@capacitor/assets": "^3.0.5",
+    "@capacitor/cli": "^6.2.0"
+  }
+}
