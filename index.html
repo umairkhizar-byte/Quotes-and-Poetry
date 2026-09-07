@@ -399,7 +399,17 @@
     });
   }
 
-  var state = { quotesPool: [], poetryPool: [], sessionSeed: 0 };
+  var state = { quotesPool: [], poetryPool: [], sessionSeed: 0, lastShownDay: null };
+
+  function refreshIfNewDay(){
+    var key = todayKey();
+    if (state.lastShownDay !== null && state.lastShownDay !== key && state.quotesPool.length){
+      state.sessionSeed = 0;
+      setGregorianDate();
+      renderQuotes(pickDaily(state.quotesPool, state.sessionSeed));
+    }
+    state.lastShownDay = key;
+  }
 
   function loadAll(){
     setStatus("لوڈ ہو رہا ہے…");
@@ -407,6 +417,7 @@
       .then(function(results){
         state.quotesPool = results[0] || [];
         state.poetryPool = results[1] || [];
+        state.lastShownDay = todayKey();
         renderQuotes(pickDaily(state.quotesPool, state.sessionSeed));
         renderPoetry(state.poetryPool.slice(0, 10));
         localStorage.setItem(STORAGE_KEY, JSON.stringify({
@@ -424,6 +435,7 @@
             var data = JSON.parse(cached);
             state.quotesPool = data.quotesPool || [];
             state.poetryPool = data.poetryPool || [];
+            state.lastShownDay = todayKey();
             renderQuotes(pickDaily(state.quotesPool, state.sessionSeed));
             renderPoetry(state.poetryPool.slice(0, 10));
             setStatus("Offline — showing saved content");
@@ -450,6 +462,17 @@
 
   setGregorianDate();
   loadAll();
+
+  // Android/iOS don't reload the page when you reopen an installed app from
+  // the background — they just resume the paused screen. Without this, the
+  // JS that picks "today's" quotes never reruns, so the same set from
+  // whenever the app was first opened keeps showing. This catches every
+  // point where the app comes back to the foreground and re-checks the date.
+  document.addEventListener("visibilitychange", function(){
+    if (document.visibilityState === "visible") refreshIfNewDay();
+  });
+  window.addEventListener("focus", refreshIfNewDay);
+  window.addEventListener("pageshow", refreshIfNewDay);
 
   if ("serviceWorker" in navigator){
     window.addEventListener("load", function(){
